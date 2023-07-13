@@ -11,6 +11,10 @@ import { build as optionInject } from './option/inject'
 import { build as optionEmit } from './option/emit'
 import { build as optionVModel } from './option/vmodel'
 import { build as optionAccessor } from './option/accessor'
+import { build as optionState } from './option/state'
+import { build as optionMutation } from './option/mutation'
+import { build as optionAction } from './option/action'
+import { build as optionGetter } from './option/getter'
 import { CustomRecords } from './custom/custom'
 import type { SetupContext } from 'vue';
 import type { OptionBuilder } from './optionBuilder'
@@ -33,16 +37,21 @@ function ComponentOption(cons: Cons, extend?: any) {
     optionRef(cons, optionBuilder)//after Computed
     optionMethodsAndHooks(cons, optionBuilder)//after Ref Computed
     optionAccessor(cons, optionBuilder)
-
+    optionState(cons, optionBuilder)
+    optionMutation(cons, optionBuilder)
+    optionAction(cons, optionBuilder)
+    optionGetter(cons, optionBuilder)
+    
 
     const setupFunction: OptionSetupFunction | undefined = optionBuilder.setup ? function (props, ctx) {
         return optionBuilder.setup!(props, ctx)
     } : undefined
+    const decoratorKeyMap = new Map(CustomRecords.map(e=>[e.key,1]))
     const raw = {
         setup: setupFunction,
         data() {
             delete optionBuilder.data
-            optionData(cons, optionBuilder, this)
+            optionData(cons, optionBuilder, this, [], decoratorKeyMap)
             return optionBuilder.data ?? {}
         },
         methods: optionBuilder.methods,
@@ -88,10 +97,11 @@ function buildComponent(cons: Cons, arg: ComponentOption, extend?: any): any {
     }
     option.emits = emits
 
-
     CustomRecords.forEach(rec => {
         rec.creator.apply({}, [option, rec.key])
     })
+    // clear records for next component
+    CustomRecords.splice(0, CustomRecords.length)
 
     if (arg.setup) {
         if (!option.setup) {

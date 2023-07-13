@@ -7,6 +7,10 @@ import type { HookConfig } from "./option/methodsAndHooks";
 import type { VModelConfig } from "./option/vmodel";
 import type { WatchConfig } from "./option/watch";
 import type { SetupConfig } from './option/setup'
+import {StateConfig} from "./option/state";
+import {MutationConfig} from "./option/mutation";
+import {ActionConfig} from "./option/action";
+import {GetterConfig} from "./option/getter";
 const SlotSymbol = Symbol('vue-facing-decorator-slot')
 
 export type SlotMapTypes = {
@@ -21,6 +25,10 @@ export type SlotMapTypes = {
     watch: Map<string, WatchConfig | WatchConfig[]>
     ref: Map<string, boolean>
     setup: Map<string, SetupConfig>
+    state: Map<string, StateConfig>
+    mutation: Map<string, MutationConfig>
+    action: Map<string, ActionConfig>
+    getter: Map<string, GetterConfig>
 }
 
 class Slot {
@@ -123,7 +131,7 @@ export function getSuperSlot(obj: any) {
 //     }
 //     return arr
 // }
-// export function 
+// export function
 // export function collect<>(slot: Slot,mapName:keyof SlotMapTypes,) {
 //     let currSlot: Slot | null = slot
 //     while (currSlot != null) {
@@ -147,7 +155,6 @@ export function excludeNames(names: string[], slot: Slot) {
         let currSlot: Slot | null = slot
         while (currSlot != null) {
             for (const mapName of currSlot.names.keys()) {
-
                 if (['watch', 'hooks', 'setup','emits'].includes(mapName)) {
                     continue
                 }

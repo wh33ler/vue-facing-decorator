@@ -14,6 +14,10 @@ export interface OptionBuilder {
     inject?: Record<string, InjectConfig>
     setup?: OptionSetupFunction
     beforeCreateCallbacks?: Function[]
+    state?: Record<string, any>
+    mutation?: Record<string, any>
+    action?: Record<string, any>
+    getter?: Record<string, any>
 }
 
 export function applyAccessors(optionBuilder: OptionBuilder, dataFunc: (ctx: any) => Map<string, { get: (() => any) | undefined, set: ((v: any) => any) | undefined }>) {
